@@ -97,7 +97,7 @@ $ ->
         'variant_product_name_or_variant_sku_cont')
 
     format_variant_result: (result) ->
-      "#{result.name} - #{result.sku}"
+      "#{result.name} - #{result.sku} (#{result.id})"
 
     build_select: (url, query) ->
       $('#transfer_variant').select2
@@ -115,8 +115,9 @@ $ ->
             result = data["variants"] || data["stock_items"]
             # Format stock items as variants
             if data["stock_items"]?
-              result = _(result).map (variant) ->
-                variant.variant
+              result = _(result).map((variant) ->
+                variant.variant).value()
+
             window.variants = result
             results: result
 
@@ -126,7 +127,6 @@ $ ->
             variant.name + " (#{variant.options_text})" + " - #{variant.sku}"
           else
             variant.name + " - #{variant.sku}"
-
 
   # Add/Remove variant line items
   class TransferAddVariants
