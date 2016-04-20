@@ -108,6 +108,8 @@ $ ->
           data: (term, page) ->
             query_object = {}
             query_object[query] = term
+            query_object["variant_id_eq"] = term
+            query_object["m"] = "or"
             q: query_object
             token: Spree.api_key
 
