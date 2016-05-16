@@ -9,7 +9,7 @@ module Spree
       attr_accessor :prefix, :length
 
       def initialize(options)
-        @random     = Random.new
+        @random     = SecureRandom.new
         @prefix     = options.fetch(:prefix)
         @length     = options.fetch(:length, DEFAULT_LENGTH)
         @candidates = NUMBERS + (options[:letters] ? LETTERS : [])
