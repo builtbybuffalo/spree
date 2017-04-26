@@ -45,7 +45,7 @@ module Spree
       private
 
       def handle_present_promotion(promotion)
-        return promotion_usage_limit_exceeded if promotion.usage_limit_exceeded?(order)
+        return promotion_usage_limit_exceeded if promotion.usage_limit_exceeded?
         return promotion_applied if promotion_exists_on_order?(order, promotion)
         unless promotion.eligible?(order)
           self.error = promotion.eligibility_errors.full_messages.first unless promotion.eligibility_errors.blank?

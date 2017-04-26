@@ -85,7 +85,7 @@ module Spree
 
     # called anytime order.update! happens
     def eligible?(promotable)
-      return false if expired? || usage_limit_exceeded?(promotable) || blacklisted?(promotable)
+      return false if expired? || usage_limit_exceeded? || blacklisted?(promotable)
       !!eligible_rules(promotable, {})
     end
 
@@ -125,21 +125,19 @@ module Spree
       rules.where(type: "Spree::Promotion::Rules::Product").map(&:products).flatten.uniq
     end
 
-    def usage_limit_exceeded?(promotable)
-      usage_limit.present? && usage_limit > 0 && adjusted_credits_count(promotable) >= usage_limit
+    def usage_limit_exceeded?
+      usage_limit.present? && usage_count >= usage_limit
     end
 
-    def adjusted_credits_count(promotable)
-      adjustments = promotable.is_a?(Order) ? promotable.all_adjustments : promotable.adjustments
-      credits_count - adjustments.promotion.where(:source_id => actions.pluck(:id)).count
-    end
-
-    def credits
-      Adjustment.eligible.promotion.where(source_id: actions.map(&:id))
-    end
-
-    def credits_count
-      credits.count
+    def usage_count
+      Spree::Adjustment
+        .eligible
+        .promotion
+        .where(source_id: actions.map(&:id))
+        .joins(:order)
+        .merge(Spree::Order.complete)
+        .distinct
+        .count(:order_id)
     end
 
     def line_item_actionable?(order, line_item)
